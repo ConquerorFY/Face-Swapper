@@ -1,19 +1,81 @@
 :root {
     --hotpink: #ef7c8e;
     --cream: #fae8e0;
-    --spearmint: #b6e2d3;
+    --spearmint: #c9e4db;
     --rosewater: #d8a7b1;
 }
 
-body {
+* {
     margin: 0;
     padding: 0;
-    width: 100vw;
+}
+
+body {
+    background-color: var(--spearmint);
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 70px 50px;
     height: 100vh;
+    box-sizing: border-box;
+}
+
+h1 {
+    color: var(--hotpink);
+    font-size: 3em;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+h2 {
+    color: var(--rosewater);
+    font-size: 1.7em;
+    text-align: center;
+    font-weight: 500;
+    margin-bottom: 50px;
+}
+
+.container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.selections-container {
+    margin-right: 30px;
+}
+
+.selections-container div {
+    margin-bottom: 20px;
+    background-color: var(--cream);
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+.selections-container div p {
+    color: var(--rosewater);
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}
+
+.selections-container div button {
+    background-color: var(--rosewater);
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: var(--cream);
+    cursor: pointer;
+}
+
+.selections-container div button:hover {
+    transition: 0.5s;
+    box-shadow: 5px 5px 2px 2px var(--hotpink)
+}
+
+.selections-container div input,
+.selections-container div button {
+    margin-bottom: 15px;
 }
 
 canvas {

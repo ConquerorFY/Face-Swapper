@@ -1,1 +1,4 @@
-const imageUpload = document.getElementById('imageUpload')
+const baseImage = document.getElementById('baseImageUpload');
+const outputContainer = document.getElementById('output');
+let selectedImage;
+let outputCanvas;

@@ -7,14 +7,32 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script defer src="./scripts/face-api.min.js"></script>
     <script defer src="./scripts/variables.js"></script>
-    <script defer src="./scripts/canvas.js"></script>
+    <script defer src="./scripts/dom.js"></script>
     <script defer src="./scripts/face-detection.js"></script>
     <link rel="stylesheet" href="./styles/style.css" />
     <title>Face Swapper</title>
 </head>
 
 <body>
-    <input type="file" id="imageUpload">
+    <h1>Face Swapper</h1>
+    <h2>Upload your photos to swap the face. Be whoever you want to be!</h2>
+    <div class="container">
+        <div class="selections-container">
+            <div class="base-image">
+                <p>Upload a photo with a face (base image)</p>
+                <input type="file" id="baseImageUpload">
+            </div>
+            <div class="target-image">
+                <p>Upload the other photo with a face (target face image) </p>
+                <input type="file" id="targetImageUpload">
+            </div>
+            <div class="swap-face">
+                <p>Click to swap face!</p>
+                <button>Swap Face Now</button>
+            </div>
+        </div>
+        <div class="output-container" id="output"></div>
+    </div>
 </body>
 
 </html>

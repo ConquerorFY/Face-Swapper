@@ -32,3 +32,21 @@ function resizeImage(file, maxWidth = 640, maxHeight = 480) {
         reader.readAsDataURL(file);
     });
 }
+
+/**
+ * Generate output
+ */
+function generateOutput(results, resizedDetections) {
+    console.log(results, resizedDetections);
+    results.forEach((result, i) => {
+        const box = resizedDetections[i].detection.box
+        const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() })
+        drawBox.draw(outputCanvas)
+    });
+
+    const container = document.createElement('div');
+    container.style.position = 'relative';
+    container.append(selectedImage);
+    container.append(outputCanvas);
+    outputContainer.append(container);
+}
