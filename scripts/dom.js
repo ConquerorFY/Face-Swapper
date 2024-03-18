@@ -1,5 +1,5 @@
 /**
- * Resize image based on specified nax width and max height dimensions
+ * Resize image based on specified max width and max height dimensions
  */
 function resizeImage(file, maxWidth = 640, maxHeight = 480) {
     return new Promise((resolve, reject) => {
@@ -176,4 +176,75 @@ function handleCanvasMouseUp() {
     for (let box of boundingBoxes) {
         box.isDragging = false;
     }
+}
+
+/**
+ * Draw image on bounding boxes
+ */
+function drawImageOnBoundingBoxes(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = new Image();
+            img.onload = function () {
+                const ctx = outputCanvas.getContext('2d');
+                ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+                drawBoundingBoxes();
+
+                // Draw image within bounding box
+                for (let box of boundingBoxes) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(box.topLeft.x, box.topLeft.y);
+                    ctx.lineTo(box.topRight.x, box.topRight.y);
+                    ctx.lineTo(box.bottomRight.x, box.bottomRight.y);
+                    ctx.lineTo(box.bottomLeft.x, box.bottomLeft.y);
+                    ctx.lineTo(box.topLeft.x, box.topLeft.y);
+                    ctx.closePath();
+                    ctx.clip();
+
+                    const { resizedCanvas: resizedImage, resizedWidth, resizedHeight } = resizeImageToFitPolygon(img, box);
+                    ctx.drawImage(resizedImage, box.topLeft.x, box.topLeft.y, resizedWidth, resizedHeight);
+                    ctx.restore();
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+/**
+ * Function to resize image to fit within the polygon
+ */
+function resizeImageToFitPolygon(image, polygonPoints) {
+    // Calculate dimensions of the bounding box around the polygon
+    let minX = Number.POSITIVE_INFINITY;
+    let minY = Number.POSITIVE_INFINITY;
+    let maxX = Number.NEGATIVE_INFINITY;
+    let maxY = Number.NEGATIVE_INFINITY;
+
+    Object.values(polygonPoints).forEach(point => {
+        if (point) {
+            minX = Math.min(minX, point.x);
+            minY = Math.min(minY, point.y);
+            maxX = Math.max(maxX, point.x);
+            maxY = Math.max(maxY, point.y);
+        }
+    });
+
+    const width = maxX - minX;
+    const height = maxY - minY;
+
+    // Create a canvas to draw the resized image
+    const resizedCanvas = document.createElement('canvas');
+    resizedCanvas.width = width;
+    resizedCanvas.height = height;
+    const resizedCtx = resizedCanvas.getContext('2d');
+
+    // Draw the image on the resized canvas
+    resizedCtx.drawImage(image, 0, 0, width, height);
+
+    return { resizedCanvas, resizedWidth: width, resizedHeight: height };
 }

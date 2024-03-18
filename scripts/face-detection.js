@@ -1,3 +1,6 @@
+/**
+ * Start loading the models and init other essential functions
+ */
 function start() {
   Promise.all([
     faceapi.nets.faceRecognitionNet.loadFromUri('./assets/models'),
@@ -5,9 +8,13 @@ function start() {
     faceapi.nets.ssdMobilenetv1.loadFromUri('./assets/models')
   ]).then(() => {
     baseImage.addEventListener('change', detectFaces);
+    targetImage.addEventListener('change', drawImageOnBoundingBoxes);
   })
 }
 
+/**
+ * Detect faces in image
+ */
 async function detectFaces() {
   const labeledFaceDescriptors = await loadLabeledImages();
   const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
@@ -27,6 +34,9 @@ async function detectFaces() {
   generateOutput(results, resizedDetections);
 }
 
+/**
+ * Load labeled images (to provide label for images during detection)
+ */
 function loadLabeledImages() {
   const labels = ['Black Widow', 'Captain America', 'Captain Marvel', 'Hawkeye', 'Jim Rhodes', 'Thor', 'Tony Stark'];
   return Promise.all(
