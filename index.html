@@ -19,15 +19,27 @@
     <div class="container">
         <div class="selections-container">
             <div class="base-image">
+                <span class="number">1</span>
                 <p>Upload a photo with a face (base image)</p>
                 <input type="file" id="baseImageUpload">
             </div>
             <div class="target-image">
+                <span class="number">2</span>
                 <p>Upload the other photo with a face (target face image) </p>
                 <input type="file" id="targetImageUpload">
             </div>
         </div>
-        <div class="output-container" id="output"></div>
+        <div>
+            <div class="tabs-container">
+                <span id="tabOutputImage" title="Click to switch to output image tab">Output Image</span>
+                <span id="tabFaceImage" title="Click to switch to target face image tab">Target Face Image</span>
+            </div>
+            <div class="output-container" id="output"></div>
+            <div class="actions-container">
+                <span id="btnSave" title="Click to save image">💾</span>
+                <span id="btnClear" title="Click to clear image">🗙</span>
+            </div>
+        </div>
     </div>
 </body>
 

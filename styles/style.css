@@ -47,10 +47,15 @@ h2 {
 }
 
 .selections-container div {
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     background-color: var(--cream);
     padding: 10px 20px;
     border-radius: 10px;
+    position: relative;
+}
+
+.selections-container .target-image {
+    margin-bottom: 0;
 }
 
 .selections-container div p {
@@ -69,6 +74,18 @@ h2 {
     margin-bottom: 15px;
 }
 
+.number {
+    position: absolute;
+    top: -20px;
+    left: -22px;
+    background-color: var(--hotpink);
+    color: var(--cream);
+    font-weight: bold;
+    font-size: 1.3em;
+    border-radius: 50%;
+    padding: 10px 15px;
+}
+
 .output-container {
     min-width: 600px;
     min-height: 300px;
@@ -81,4 +98,49 @@ canvas {
     position: absolute;
     top: 0;
     left: 0;
+}
+
+.tabs-container {
+    display: flex;
+    width: max-content;
+    background-color: var(--hotpink);
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.tabs-container span {
+    color: var(--cream);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tabs-container span:hover {
+    transition: 0.5s;
+    text-decoration-line: underline;
+}
+
+.tabs-container #tabOutputImage {
+    margin-right: 20px;
+}
+
+.actions-container {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    background-color: var(--hotpink);
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin: auto;
+    margin-top: 5px;
+}
+
+.actions-container span {
+    font-size: 0.8em;
+    cursor: pointer;
+    color: var(--cream);
+}
+
+.actions-container #btnSave {
+    margin-right: 20px;
 }
