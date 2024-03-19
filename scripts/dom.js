@@ -71,41 +71,43 @@ function reset() {
  * Generate output
  */
 function generateOutput(results, resizedDetections) {
-    reset();
-    results.forEach((result, i) => {
-        const box = resizedDetections[i].detection.box;
-        boundingBoxes.push({
-            topLeft: {
-                x: box.topLeft.x,
-                y: box.topLeft.y,
-            },
-            topRight: {
-                x: box.topRight.x,
-                y: box.topRight.y,
-            },
-            bottomLeft: {
-                x: box.bottomLeft.x,
-                y: box.bottomLeft.y,
-            },
-            bottomRight: {
-                x: box.bottomRight.x,
-                y: box.bottomRight.y,
-            },
-            isDragging: false
+    if (selectedTab === "output") {
+        reset();
+        results.forEach((result, i) => {
+            const box = resizedDetections[i].detection.box;
+            boundingBoxes.push({
+                topLeft: {
+                    x: box.topLeft.x,
+                    y: box.topLeft.y,
+                },
+                topRight: {
+                    x: box.topRight.x,
+                    y: box.topRight.y,
+                },
+                bottomLeft: {
+                    x: box.bottomLeft.x,
+                    y: box.bottomLeft.y,
+                },
+                bottomRight: {
+                    x: box.bottomRight.x,
+                    y: box.bottomRight.y,
+                },
+                isDragging: false
+            });
         });
-    });
-    drawBoundingBoxes();
+        drawBoundingBoxes();
 
-    if (divContainer) divContainer.remove();
-    divContainer = document.createElement('div');
-    divContainer.style.position = 'relative';
-    divContainer.append(selectedImage);
-    divContainer.append(outputCanvas);
-    outputContainer.append(divContainer);
+        if (divContainer) divContainer.remove();
+        divContainer = document.createElement('div');
+        divContainer.style.position = 'relative';
+        divContainer.append(selectedImage);
+        divContainer.append(outputCanvas);
+        outputContainer.append(divContainer);
 
-    outputCanvas.addEventListener('mousedown', handleCanvasMouseDown);
-    outputCanvas.addEventListener('mousemove', handleCanvasMouseMove);
-    outputCanvas.addEventListener('mouseup', handleCanvasMouseUp);
+        outputCanvas.addEventListener('mousedown', handleCanvasMouseDown);
+        outputCanvas.addEventListener('mousemove', handleCanvasMouseMove);
+        outputCanvas.addEventListener('mouseup', handleCanvasMouseUp);
+    }
 }
 
 /**
@@ -181,9 +183,8 @@ function handleCanvasMouseUp() {
 /**
  * Draw image on bounding boxes
  */
-function drawImageOnBoundingBoxes(event) {
-    const file = event.target.files[0];
-    if (file) {
+function drawImageOnBoundingBoxes() {
+    if (targetImageInput) {
         const reader = new FileReader();
         reader.onload = function (e) {
             const img = new Image();
@@ -211,7 +212,7 @@ function drawImageOnBoundingBoxes(event) {
             };
             img.src = e.target.result;
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(targetImageInput);
     }
 }
 
@@ -247,4 +248,58 @@ function resizeImageToFitPolygon(image, polygonPoints) {
     resizedCtx.drawImage(image, 0, 0, width, height);
 
     return { resizedCanvas, resizedWidth: width, resizedHeight: height };
+}
+
+/**
+ * Edit target face
+ */
+function editTargetFace() {
+    if (selectedTab === "face") {
+        divContainer = document.createElement('div');
+        divContainer.style.position = 'relative';
+        outputContainer.appendChild(divContainer);
+
+        if (targetImageInput) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image(640, 480);
+                img.src = e.target.result;
+                const divImg = document.createElement('div');
+                divImg.appendChild(img);
+                handleCropping(img);
+                divContainer.appendChild(img);
+            };
+            reader.readAsDataURL(targetImageInput);
+        }
+    }
+}
+
+/**
+ * Select tab
+ */
+function selectTab(type) {
+    /* either output or face */
+    if (selectedImage) selectedImage.remove();
+    if (outputCanvas) outputCanvas.remove();
+    if (divContainer) divContainer.remove();
+
+    if (type === "output") {
+        outputImageTab.style.textDecorationLine = 'underline';
+        faceImageTab.style.textDecorationLine = 'initial';
+        btnCrop.style.display = "none";
+        btnSave.style.display = "initial";
+        btnClear.style.display = "initial";
+        selectedTab = "output";
+        detectFaces();
+    } else if (type === "face") {
+        faceImageTab.style.textDecorationLine = 'underline';
+        outputImageTab.style.textDecorationLine = 'initial';
+        btnCrop.style.display = "initial";
+        btnSave.style.display = "none";
+        btnClear.style.display = "none";
+        selectedTab = "face";
+        editTargetFace();
+    } else {
+        throw new Error("Type is not defined!");
+    }
 }

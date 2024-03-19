@@ -14,7 +14,7 @@ body {
     background-color: var(--spearmint);
     font-family: Arial, Helvetica, sans-serif;
     padding: 70px 50px;
-    height: 100vh;
+    /* height: 100vh; */
     box-sizing: border-box;
 }
 
@@ -143,4 +143,15 @@ canvas {
 
 .actions-container #btnSave {
     margin-right: 20px;
+}
+
+.cropper-view-box,
+.cropper-face {
+    border-radius: 50%;
+}
+
+/* The css styles for `outline` do not follow `border-radius` on iOS/Safari (#979). */
+.cropper-view-box {
+    outline: 0;
+    box-shadow: 0 0 0 1px #39f;
 }

@@ -7,8 +7,17 @@ function start() {
     faceapi.nets.faceLandmark68Net.loadFromUri('./assets/models'),
     faceapi.nets.ssdMobilenetv1.loadFromUri('./assets/models')
   ]).then(() => {
-    baseImage.addEventListener('change', detectFaces);
-    targetImage.addEventListener('change', drawImageOnBoundingBoxes);
+    baseImage.addEventListener('change', (event) => {
+      baseImageInput = event.target.files[0];
+      selectTab('output');
+    });
+    targetImage.addEventListener('change', (event) => {
+      targetImageInput = event.target.files[0];
+      selectTab(selectedTab ?? "face"); 
+    });
+    outputImageTab.addEventListener('click', () => selectTab('output'));
+    faceImageTab.addEventListener('click', () => selectTab('face'));
+    selectTab('output');
   })
 }
 
@@ -16,22 +25,25 @@ function start() {
  * Detect faces in image
  */
 async function detectFaces() {
-  const labeledFaceDescriptors = await loadLabeledImages();
-  const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
+  if (baseImageInput) {
+    const labeledFaceDescriptors = await loadLabeledImages();
+    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
 
-  if (selectedImage) selectedImage.remove();
-  if (outputCanvas) outputCanvas.remove();
-  const resizedFile = await resizeImage(baseImage.files[0]);
-  selectedImage = await faceapi.bufferToImage(resizedFile);
-  outputCanvas = faceapi.createCanvasFromMedia(selectedImage);
-  const displaySize = { width: selectedImage.width, height: selectedImage.height };
-  faceapi.matchDimensions(outputCanvas, displaySize);
+    if (selectedImage) selectedImage.remove();
+    if (outputCanvas) outputCanvas.remove();
+    const resizedFile = await resizeImage(baseImageInput);
+    selectedImage = await faceapi.bufferToImage(resizedFile);
+    outputCanvas = faceapi.createCanvasFromMedia(selectedImage);
+    const displaySize = { width: selectedImage.width, height: selectedImage.height };
+    faceapi.matchDimensions(outputCanvas, displaySize);
 
-  const detections = await faceapi.detectAllFaces(selectedImage).withFaceLandmarks().withFaceDescriptors();
-  const resizedDetections = faceapi.resizeResults(detections, displaySize);
-  const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
+    const detections = await faceapi.detectAllFaces(selectedImage).withFaceLandmarks().withFaceDescriptors();
+    const resizedDetections = faceapi.resizeResults(detections, displaySize);
+    const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
 
-  generateOutput(results, resizedDetections);
+    generateOutput(results, resizedDetections);
+    drawImageOnBoundingBoxes();
+  }
 }
 
 /**
