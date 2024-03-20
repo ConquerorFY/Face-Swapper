@@ -303,3 +303,35 @@ function selectTab(type) {
         throw new Error("Type is not defined!");
     }
 }
+
+/**
+ * Convert img element to file
+ */
+async function imageToFile(image, fileName = 'cropped_img.png') {
+    const blob_1 = await new Promise((resolve, reject) => {
+        // Create a canvas element
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas dimensions to match image dimensions
+        canvas.width = image.width;
+        canvas.height = image.height;
+
+        // Draw image onto canvas
+        ctx.drawImage(image, 0, 0, image.width, image.height);
+
+        // Convert canvas content to blob
+        canvas.toBlob(
+            blob => {
+                if (blob) {
+                    resolve(blob);
+                } else {
+                    reject(new Error('Failed to convert image to blob'));
+                }
+            },
+            'image/png', // Change this to match the desired file type
+            1 // Quality (only applicable for 'image/jpeg' format)
+        );
+    });
+    return new File([blob_1], fileName, { type: blob_1.type });
+}

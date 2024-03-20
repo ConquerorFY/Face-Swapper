@@ -45,9 +45,19 @@ function handleCropping(image) {
         roundedCanvas = getRoundedCropBox(croppedCanvas);
 
         // Show
-        // roundedImage = new Image(640, 480);
-        // roundedImage.src = roundedCanvas.toDataURL()
-        // divContainer.innerHTML = '';
-        // divContainer.appendChild(roundedImage);
+        roundedImage = new Image(640, 480);
+        roundedImage.src = roundedCanvas.toDataURL()
+        modalContent.innerHTML = '';
+        modalContent.appendChild(roundedImage);
+        openModal();
     };
+}
+
+/**
+ * Function to confirm cropped face
+ */
+async function confirmCroppedFace() {
+    const croppedFace = modalContent.children[0];
+    targetImageInput = await imageToFile(croppedFace);
+    closeModal();
 }

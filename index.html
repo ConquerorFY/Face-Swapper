@@ -13,6 +13,7 @@
     <script defer src="./scripts/crop.js"></script>
     <script defer src="./scripts/variables.js"></script>
     <script defer src="./scripts/dom.js"></script>
+    <script defer src="./scripts/modal.js"></script>
     <script defer src="./scripts/face-detection.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"
@@ -23,6 +24,16 @@
 </head>
 
 <body>
+    <div class="modal-container" id="modalContainer" style="display: none">
+        <div class="modal">
+            <h1>Cropped Image: </h1>
+            <div id="modalContent"></div>
+            <div class="modal-action-buttons">
+                <span id="btnCancel">Cancel</span>
+                <span id="btnConfirm">Confirm</span>
+            </div>
+        </div>
+    </div>
     <h1>Face Swapper</h1>
     <h2>Upload your photos to swap the face. Be whoever you want to be!</h2>
     <div class="container">
