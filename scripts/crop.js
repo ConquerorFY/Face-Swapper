@@ -59,5 +59,6 @@ function handleCropping(image) {
 async function confirmCroppedFace() {
     const croppedFace = modalContent.children[0];
     targetImageCropInput = await imageToFile(croppedFace);
+    showNotification("Your cropped image has been added!!");
     closeModal();
 }

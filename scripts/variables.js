@@ -5,6 +5,7 @@ const outputImageTab = document.getElementById('tabOutputImage');
 const faceImageTab = document.getElementById('tabFaceImage');
 const modalContainer = document.getElementById('modalContainer');
 const modalContent = document.getElementById('modalContent');
+const notificationContainer = document.getElementById('notificationContainer');
 
 const btnSave = document.getElementById('btnSave');
 const btnClear = document.getElementById('btnClear');

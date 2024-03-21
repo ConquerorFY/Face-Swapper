@@ -10,3 +10,4 @@
 - Add Filled Points (for Positioning)                       [X]
 - Toggle Show / Hide Face Selector
 - Remove Target Image       
+- Added Notification                                        [X]
