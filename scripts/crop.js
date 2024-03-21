@@ -45,7 +45,7 @@ function handleCropping(image) {
         roundedCanvas = getRoundedCropBox(croppedCanvas);
 
         // Show
-        roundedImage = new Image(640, 480);
+        roundedImage = new Image(400, 400);
         roundedImage.src = roundedCanvas.toDataURL()
         modalContent.innerHTML = '';
         modalContent.appendChild(roundedImage);
@@ -58,6 +58,6 @@ function handleCropping(image) {
  */
 async function confirmCroppedFace() {
     const croppedFace = modalContent.children[0];
-    targetImageInput = await imageToFile(croppedFace);
+    targetImageCropInput = await imageToFile(croppedFace);
     closeModal();
 }

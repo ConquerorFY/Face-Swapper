@@ -184,7 +184,8 @@ function handleCanvasMouseUp() {
  * Draw image on bounding boxes
  */
 function drawImageOnBoundingBoxes() {
-    if (targetImageInput) {
+    const imageInput = targetImageCropInput ?? targetImageInput;
+    if (imageInput) {
         const reader = new FileReader();
         reader.onload = function (e) {
             const img = new Image();
@@ -212,7 +213,7 @@ function drawImageOnBoundingBoxes() {
             };
             img.src = e.target.result;
         };
-        reader.readAsDataURL(targetImageInput);
+        reader.readAsDataURL(imageInput);
     }
 }
 
@@ -308,7 +309,7 @@ function selectTab(type) {
  * Convert img element to file
  */
 async function imageToFile(image, fileName = 'cropped_img.png') {
-    const blob_1 = await new Promise((resolve, reject) => {
+    const fileBlob = await new Promise((resolve, reject) => {
         // Create a canvas element
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -333,5 +334,5 @@ async function imageToFile(image, fileName = 'cropped_img.png') {
             1 // Quality (only applicable for 'image/jpeg' format)
         );
     });
-    return new File([blob_1], fileName, { type: blob_1.type });
+    return new File([fileBlob], fileName, { type: fileBlob.type });
 }

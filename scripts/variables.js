@@ -14,6 +14,7 @@ const btnConfirm = document.getElementById('btnConfirm');
 
 let baseImageInput;
 let targetImageInput;
+let targetImageCropInput;
 
 let divContainer;
 let selectedImage;
