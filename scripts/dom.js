@@ -34,6 +34,35 @@ function resizeImage(file, maxWidth = 640, maxHeight = 480) {
 }
 
 /**
+ * Fill up points on bounding box
+ */
+function fillPointsBoundingBoxes(ctx, point1, point2, point3, point4) {
+    const radius = 3;
+
+    // Draw fill points
+    ctx.fillStyle = 'darkblue';
+    ctx.beginPath();
+    ctx.arc(point1.x, point1.y, radius, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(point2.x, point2.y, radius, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(point3.x, point3.y, radius, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(point4.x, point4.y, radius, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.fill();
+}
+
+/**
  * Draw bounding boxes on canvas
  */
 function drawBoundingBoxes() {
@@ -49,6 +78,7 @@ function drawBoundingBoxes() {
         ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
         ctx.closePath();
         ctx.stroke();
+        fillPointsBoundingBoxes(ctx, topLeft, topRight, bottomLeft, bottomRight);
     }
 }
 
@@ -140,6 +170,26 @@ function handleCanvasMouseDown(event) {
 }
 
 /**
+ * Update points for resizing
+ */
+function updatePointResize(center, movedPoint, targetPoint) {
+    // Calculate the new radius based on the distance from the center to the moved point
+    const radius = distance(center, movedPoint);
+
+    // Calculate the angle between the current point and the center
+    const angle = Math.atan2(targetPoint.y - center.y, targetPoint.x - center.x);
+
+    // Update the position of the current point based on the new radius and angle
+    const updatedPointX = center.x + radius * Math.cos(angle);
+    const updatedPointY = center.y + radius * Math.sin(angle);
+
+    return {
+        x: updatedPointX,
+        y: updatedPointY
+    }
+}
+
+/**
  * Handle mouse move in canvas
  */
 function handleCanvasMouseMove(event) {
@@ -149,22 +199,35 @@ function handleCanvasMouseMove(event) {
     };
     for (let i = 0; i < boundingBoxes.length; i++) {
         if (boundingBoxes[i].isDragging) {
-            if (isPointWithinRange(currentPoint, boundingBoxes[i].topLeft)) {
-                boundingBoxes[i].topLeft.x = currentPoint.x;
-                boundingBoxes[i].topLeft.y = currentPoint.y;
+            const { center } = calcCenterRadius(
+                boundingBoxes[i].topLeft,
+                boundingBoxes[i].topRight,
+                boundingBoxes[i].bottomLeft,
+                boundingBoxes[i].bottomRight,
+            );
+
+            if (isPointWithinRange(currentPoint, boundingBoxes[i].topLeft)
+                || isPointWithinRange(currentPoint, boundingBoxes[i].topRight)
+                || isPointWithinRange(currentPoint, boundingBoxes[i].bottomLeft)
+                || isPointWithinRange(currentPoint, boundingBoxes[i].bottomRight)
+            ) {
+                const topLeft = updatePointResize(center, currentPoint, boundingBoxes[i].topLeft);
+                boundingBoxes[i].topLeft.x = topLeft.x;
+                boundingBoxes[i].topLeft.y = topLeft.y;
+
+                const topRight = updatePointResize(center, currentPoint, boundingBoxes[i].topRight);
+                boundingBoxes[i].topRight.x = topRight.x;
+                boundingBoxes[i].topRight.y = topRight.y;
+
+                const bottomLeft = updatePointResize(center, currentPoint, boundingBoxes[i].bottomLeft);
+                boundingBoxes[i].bottomLeft.x = bottomLeft.x;
+                boundingBoxes[i].bottomLeft.y = bottomLeft.y;
+
+                const bottomRight = updatePointResize(center, currentPoint, boundingBoxes[i].bottomRight);
+                boundingBoxes[i].bottomRight.x = bottomRight.x;
+                boundingBoxes[i].bottomRight.y = bottomRight.y;
             }
-            else if (isPointWithinRange(currentPoint, boundingBoxes[i].topRight)) {
-                boundingBoxes[i].topRight.x = currentPoint.x;
-                boundingBoxes[i].topRight.y = currentPoint.y;
-            }
-            else if (isPointWithinRange(currentPoint, boundingBoxes[i].bottomLeft)) {
-                boundingBoxes[i].bottomLeft.x = currentPoint.x;
-                boundingBoxes[i].bottomLeft.y = currentPoint.y;
-            }
-            else if (isPointWithinRange(currentPoint, boundingBoxes[i].bottomRight)) {
-                boundingBoxes[i].bottomRight.x = currentPoint.x;
-                boundingBoxes[i].bottomRight.y = currentPoint.y;
-            }
+
             drawBoundingBoxes();
         }
     }
