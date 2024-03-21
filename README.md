@@ -6,3 +6,7 @@
 - Save Output Image
 - Add Face Selector
 - Remove Face Selector
+- Add Filled Points (for Resizing)                          [X]
+- Add Filled Points (for Positioning)                       [X]
+- Toggle Show / Hide Face Selector
+- Remove Target Image       

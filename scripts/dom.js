@@ -121,7 +121,8 @@ function generateOutput(results, resizedDetections) {
                     x: box.bottomRight.x,
                     y: box.bottomRight.y,
                 },
-                isDragging: false
+                isResizing: false,
+                isMoving: false
             });
         });
         drawBoundingBoxes();
@@ -159,33 +160,22 @@ function handleCanvasMouseDown(event) {
     };
 
     for (let i = 0; i < boundingBoxes.length; i++) {
+        const { center } = calcCenterRadius(boundingBoxes[i].topLeft, boundingBoxes[i].topRight,
+            boundingBoxes[i].bottomLeft, boundingBoxes[i].bottomRight);
+
         if (isPointWithinRange(currentPoint, boundingBoxes[i].topLeft)
             || isPointWithinRange(currentPoint, boundingBoxes[i].topRight)
             || isPointWithinRange(currentPoint, boundingBoxes[i].bottomLeft)
             || isPointWithinRange(currentPoint, boundingBoxes[i].bottomRight)
         ) {
-            boundingBoxes[i].isDragging = true;
+            boundingBoxes[i].isResizing = true;
+            outputCanvas.style.cursor = "nw-resize";
         }
-    }
-}
 
-/**
- * Update points for resizing
- */
-function updatePointResize(center, movedPoint, targetPoint) {
-    // Calculate the new radius based on the distance from the center to the moved point
-    const radius = distance(center, movedPoint);
-
-    // Calculate the angle between the current point and the center
-    const angle = Math.atan2(targetPoint.y - center.y, targetPoint.x - center.x);
-
-    // Update the position of the current point based on the new radius and angle
-    const updatedPointX = center.x + radius * Math.cos(angle);
-    const updatedPointY = center.y + radius * Math.sin(angle);
-
-    return {
-        x: updatedPointX,
-        y: updatedPointY
+        if (isPointWithinRange(currentPoint, center)) {
+            boundingBoxes[i].isMoving = true;
+            outputCanvas.style.cursor = "all-scroll";
+        }
     }
 }
 
@@ -198,7 +188,7 @@ function handleCanvasMouseMove(event) {
         y: event.clientY - outputCanvas.getBoundingClientRect().top
     };
     for (let i = 0; i < boundingBoxes.length; i++) {
-        if (boundingBoxes[i].isDragging) {
+        if (boundingBoxes[i].isResizing) {
             const { center } = calcCenterRadius(
                 boundingBoxes[i].topLeft,
                 boundingBoxes[i].topRight,
@@ -206,29 +196,50 @@ function handleCanvasMouseMove(event) {
                 boundingBoxes[i].bottomRight,
             );
 
-            if (isPointWithinRange(currentPoint, boundingBoxes[i].topLeft)
-                || isPointWithinRange(currentPoint, boundingBoxes[i].topRight)
-                || isPointWithinRange(currentPoint, boundingBoxes[i].bottomLeft)
-                || isPointWithinRange(currentPoint, boundingBoxes[i].bottomRight)
-            ) {
-                const topLeft = updatePointResize(center, currentPoint, boundingBoxes[i].topLeft);
-                boundingBoxes[i].topLeft.x = topLeft.x;
-                boundingBoxes[i].topLeft.y = topLeft.y;
+            const topLeft = updatePointResize(center, currentPoint, boundingBoxes[i].topLeft);
+            boundingBoxes[i].topLeft.x = topLeft.x;
+            boundingBoxes[i].topLeft.y = topLeft.y;
 
-                const topRight = updatePointResize(center, currentPoint, boundingBoxes[i].topRight);
-                boundingBoxes[i].topRight.x = topRight.x;
-                boundingBoxes[i].topRight.y = topRight.y;
+            const topRight = updatePointResize(center, currentPoint, boundingBoxes[i].topRight);
+            boundingBoxes[i].topRight.x = topRight.x;
+            boundingBoxes[i].topRight.y = topRight.y;
 
-                const bottomLeft = updatePointResize(center, currentPoint, boundingBoxes[i].bottomLeft);
-                boundingBoxes[i].bottomLeft.x = bottomLeft.x;
-                boundingBoxes[i].bottomLeft.y = bottomLeft.y;
+            const bottomLeft = updatePointResize(center, currentPoint, boundingBoxes[i].bottomLeft);
+            boundingBoxes[i].bottomLeft.x = bottomLeft.x;
+            boundingBoxes[i].bottomLeft.y = bottomLeft.y;
 
-                const bottomRight = updatePointResize(center, currentPoint, boundingBoxes[i].bottomRight);
-                boundingBoxes[i].bottomRight.x = bottomRight.x;
-                boundingBoxes[i].bottomRight.y = bottomRight.y;
-            }
+            const bottomRight = updatePointResize(center, currentPoint, boundingBoxes[i].bottomRight);
+            boundingBoxes[i].bottomRight.x = bottomRight.x;
+            boundingBoxes[i].bottomRight.y = bottomRight.y;
 
-            drawBoundingBoxes();
+            targetImageInput || targetImageCropInput ? drawImageOnBoundingBoxes() : drawBoundingBoxes();
+        }
+
+        if (boundingBoxes[i].isMoving) {
+            const { center } = calcCenterRadius(
+                boundingBoxes[i].topLeft,
+                boundingBoxes[i].topRight,
+                boundingBoxes[i].bottomLeft,
+                boundingBoxes[i].bottomRight,
+            );
+
+            const topLeft = updatePointMoving(center, currentPoint, boundingBoxes[i].topLeft);
+            boundingBoxes[i].topLeft.x = topLeft.x;
+            boundingBoxes[i].topLeft.y = topLeft.y;
+
+            const topRight = updatePointMoving(center, currentPoint, boundingBoxes[i].topRight);
+            boundingBoxes[i].topRight.x = topRight.x;
+            boundingBoxes[i].topRight.y = topRight.y;
+
+            const bottomLeft = updatePointMoving(center, currentPoint, boundingBoxes[i].bottomLeft);
+            boundingBoxes[i].bottomLeft.x = bottomLeft.x;
+            boundingBoxes[i].bottomLeft.y = bottomLeft.y;
+
+            const bottomRight = updatePointMoving(center, currentPoint, boundingBoxes[i].bottomRight);
+            boundingBoxes[i].bottomRight.x = bottomRight.x;
+            boundingBoxes[i].bottomRight.y = bottomRight.y;
+
+            targetImageInput || targetImageCropInput ? drawImageOnBoundingBoxes() : drawBoundingBoxes();
         }
     }
 }
@@ -238,7 +249,9 @@ function handleCanvasMouseMove(event) {
  */
 function handleCanvasMouseUp() {
     for (let box of boundingBoxes) {
-        box.isDragging = false;
+        box.isResizing = false;
+        box.isMoving = false;
+        outputCanvas.style.cursor = "initial";
     }
 }
 
