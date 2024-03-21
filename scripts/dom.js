@@ -37,27 +37,27 @@ function resizeImage(file, maxWidth = 640, maxHeight = 480) {
  * Fill up points on bounding box
  */
 function fillPointsBoundingBoxes(ctx, point1, point2, point3, point4) {
-    const radius = 3;
+    const length = 6;
 
     // Draw fill points
     ctx.fillStyle = 'darkblue';
     ctx.beginPath();
-    ctx.arc(point1.x, point1.y, radius, 0, 2 * Math.PI);
+    ctx.fillRect(point1.x - length / 2, point1.y - length / 2, length, length);
     ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
-    ctx.arc(point2.x, point2.y, radius, 0, 2 * Math.PI);
+    ctx.fillRect(point2.x - length / 2, point2.y - length / 2, length, length);
     ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
-    ctx.arc(point3.x, point3.y, radius, 0, 2 * Math.PI);
+    ctx.fillRect(point3.x - length / 2, point3.y - length / 2, length, length);
     ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
-    ctx.arc(point4.x, point4.y, radius, 0, 2 * Math.PI);
+    ctx.fillRect(point4.x - length / 2, point4.y - length / 2, length, length);
     ctx.closePath();
     ctx.fill();
 }
