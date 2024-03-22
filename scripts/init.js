@@ -19,6 +19,7 @@ function start() {
         faceImageTab.addEventListener('click', () => selectTab('face'));
         btnCancel.addEventListener('click', closeModal);
         btnConfirm.addEventListener('click', confirmCroppedFace);
+        btnClear.addEventListener('click', handleClearImage);
         selectTab('output');
     })
 }

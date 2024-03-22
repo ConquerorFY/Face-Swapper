@@ -9,5 +9,5 @@
 - Add Filled Points (for Resizing)                          [X]
 - Add Filled Points (for Positioning)                       [X]
 - Toggle Show / Hide Face Selector
-- Remove Target Image       
+- Remove Output & Target Image                              [X]
 - Added Notification                                        [X]

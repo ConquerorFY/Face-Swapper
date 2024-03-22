@@ -209,7 +209,8 @@ canvas {
     color: var(--cream);
 }
 
-.actions-container #btnSave {
+.actions-container #btnSave,
+.actions-container #btnCrop {
     margin-right: 20px;
 }
 

@@ -85,15 +85,32 @@ function drawBoundingBoxes() {
 /**
  * Reset environment
  */
-function reset() {
-    /* Prevent memory leak */
-    outputCanvas.removeEventListener('mousedown', handleCanvasMouseDown);
-    outputCanvas.removeEventListener('mousemove', handleCanvasMouseMove);
-    outputCanvas.removeEventListener('mouseup', handleCanvasMouseUp);
+function reset(clearOutputContainer = false, saveBoundingBox = false) {
+    if (clearOutputContainer) {
+        if (divContainer) divContainer.remove();
 
-    const ctx = outputCanvas.getContext('2d');
-    ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
-    boundingBoxes = [];
+        if (selectedTab === "output") {
+            baseImage.value = "";
+            baseImageInput = undefined;
+            boundingBoxes = [];
+        }
+        else if (selectedTab === "face") {
+            targetImage.value = "";
+            targetImageInput = undefined;
+            targetImageCropInput = undefined;
+        }
+    } else {
+        if (selectedTab === "output") {
+            /* Prevent memory leak */
+            outputCanvas.removeEventListener('mousedown', handleCanvasMouseDown);
+            outputCanvas.removeEventListener('mousemove', handleCanvasMouseMove);
+            outputCanvas.removeEventListener('mouseup', handleCanvasMouseUp);
+
+            const ctx = outputCanvas.getContext('2d');
+            ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+            if (!saveBoundingBox) boundingBoxes = [];
+        }
+    }
 }
 
 /**
@@ -295,6 +312,7 @@ function drawImageOnBoundingBoxes() {
  */
 function editTargetFace() {
     if (selectedTab === "face") {
+        if (divContainer) divContainer.remove();
         divContainer = document.createElement('div');
         divContainer.style.position = 'relative';
         outputContainer.appendChild(divContainer);
@@ -304,6 +322,7 @@ function editTargetFace() {
             reader.onload = function (e) {
                 const img = new Image(640, 480);
                 img.src = e.target.result;
+                /* Need to add a parent div for cropper.js to work */
                 const divImg = document.createElement('div');
                 divImg.appendChild(img);
                 handleCropping(img);
@@ -328,7 +347,6 @@ function selectTab(type) {
         faceImageTab.style.textDecorationLine = 'initial';
         btnCrop.style.display = "none";
         btnSave.style.display = "initial";
-        btnClear.style.display = "initial";
         selectedTab = "output";
         detectFaces();
     } else if (type === "face") {
@@ -336,7 +354,6 @@ function selectTab(type) {
         outputImageTab.style.textDecorationLine = 'initial';
         btnCrop.style.display = "initial";
         btnSave.style.display = "none";
-        btnClear.style.display = "none";
         selectedTab = "face";
         editTargetFace();
     } else {
@@ -374,4 +391,12 @@ async function imageToFile(image, fileName = 'cropped_img.png') {
         );
     });
     return new File([fileBlob], fileName, { type: fileBlob.type });
+}
+
+/**
+ * Handle clear action (both output image and target face image)
+ */
+function handleClearImage() {
+    reset(true);
+    showNotification("Cleared image canvas successfully!");
 }
