@@ -105,6 +105,7 @@ h2 {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
     padding: 20px;
     border-radius: 10px;
 }
@@ -224,4 +225,17 @@ canvas {
 .cropper-view-box {
     outline: 0;
     box-shadow: 0 0 0 1px #39f;
+}
+
+@media screen and (max-width: 1190px) {
+    .selections-container {
+        margin-bottom: 50px;
+    }
+}
+
+@media screen and (max-width: 630px) {
+    .container {
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
 }
