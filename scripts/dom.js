@@ -87,6 +87,7 @@ function drawBoundingBoxes() {
  */
 function reset(clearOutputContainer = false, saveBoundingBox = false) {
     if (clearOutputContainer) {
+        storedOutputCanvas = undefined;
         if (divContainer) divContainer.remove();
 
         if (selectedTab === "output") {
@@ -116,32 +117,34 @@ function reset(clearOutputContainer = false, saveBoundingBox = false) {
 /**
  * Generate output
  */
-function generateOutput(results, resizedDetections) {
+function generateOutput(results, resizedDetections, saveBoundingBox = false) {
     if (selectedTab === "output") {
-        reset();
-        results.forEach((result, i) => {
-            const box = resizedDetections[i].detection.box;
-            boundingBoxes.push({
-                topLeft: {
-                    x: box.topLeft.x,
-                    y: box.topLeft.y,
-                },
-                topRight: {
-                    x: box.topRight.x,
-                    y: box.topRight.y,
-                },
-                bottomLeft: {
-                    x: box.bottomLeft.x,
-                    y: box.bottomLeft.y,
-                },
-                bottomRight: {
-                    x: box.bottomRight.x,
-                    y: box.bottomRight.y,
-                },
-                isResizing: false,
-                isMoving: false
+        reset(false, saveBoundingBox);
+        if (!saveBoundingBox) {
+            results.forEach((result, i) => {
+                const box = resizedDetections[i].detection.box;
+                boundingBoxes.push({
+                    topLeft: {
+                        x: box.topLeft.x,
+                        y: box.topLeft.y,
+                    },
+                    topRight: {
+                        x: box.topRight.x,
+                        y: box.topRight.y,
+                    },
+                    bottomLeft: {
+                        x: box.bottomLeft.x,
+                        y: box.bottomLeft.y,
+                    },
+                    bottomRight: {
+                        x: box.bottomRight.x,
+                        y: box.bottomRight.y,
+                    },
+                    isResizing: false,
+                    isMoving: false
+                });
             });
-        });
+        }
         drawBoundingBoxes();
 
         if (divContainer) divContainer.remove();
@@ -336,7 +339,7 @@ function editTargetFace() {
 /**
  * Select tab
  */
-function selectTab(type) {
+function selectTab(type, saveBoundingBox = false) {
     /* either output or face */
     if (selectedImage) selectedImage.remove();
     if (outputCanvas) outputCanvas.remove();
@@ -347,13 +350,15 @@ function selectTab(type) {
         faceImageTab.style.textDecorationLine = 'initial';
         btnCrop.style.display = "none";
         btnSave.style.display = "initial";
+        btnToggle.style.display = "initial";
         selectedTab = "output";
-        detectFaces();
+        detectFaces(saveBoundingBox);
     } else if (type === "face") {
         faceImageTab.style.textDecorationLine = 'underline';
         outputImageTab.style.textDecorationLine = 'initial';
         btnCrop.style.display = "initial";
         btnSave.style.display = "none";
+        btnToggle.style.display = "none";
         selectedTab = "face";
         editTargetFace();
     } else {
@@ -399,4 +404,38 @@ async function imageToFile(image, fileName = 'cropped_img.png') {
 function handleClearImage() {
     reset(true);
     showNotification("Cleared image canvas successfully!");
+}
+
+/**
+ * Deep copy HTMLCanvasElement
+ */
+function copyCanvas(originalCanvas) {
+    const newCanvas = document.createElement('canvas');
+    const context = newCanvas.getContext('2d');
+    newCanvas.width = originalCanvas.width;
+    newCanvas.height = originalCanvas.height;
+    context.drawImage(originalCanvas, 0, 0);
+
+    newCanvas.addEventListener('mousedown', handleCanvasMouseDown);
+    newCanvas.addEventListener('mousemove', handleCanvasMouseMove);
+    newCanvas.addEventListener('mouseup', handleCanvasMouseUp);
+
+    return newCanvas;
+}
+
+/**
+ * Handle toggle bounding box
+ */
+function handleToggleBoundingBox() {
+    if (outputCanvas) {
+        storedOutputCanvas = copyCanvas(outputCanvas);
+        outputCanvas.remove();
+        outputCanvas = undefined;
+        showNotification('Bounding boxes are hidden!');
+    } else {
+        outputCanvas = storedOutputCanvas;
+        divContainer.appendChild(outputCanvas);
+        targetImageCropInput ?? targetImageInput ? drawImageOnBoundingBoxes() : drawBoundingBoxes();
+        showNotification('Bounding boxes are shown!');
+    }
 }

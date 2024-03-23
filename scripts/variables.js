@@ -17,6 +17,7 @@ const notificationContainer = document.getElementById('notificationContainer');
 const btnSave = document.getElementById('btnSave');
 const btnClear = document.getElementById('btnClear');
 const btnCrop = document.getElementById('btnCrop');
+const btnToggle = document.getElementById('btnToggle');
 
 /* Modal Buttons */
 const btnCancel = document.getElementById('btnCancel');
@@ -31,6 +32,7 @@ let targetImageCropInput;
 let divContainer;
 let selectedImage;
 let outputCanvas;
+let storedOutputCanvas;
 
 /* Others */
 const outputContainer = document.getElementById('output');

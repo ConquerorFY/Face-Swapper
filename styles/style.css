@@ -210,7 +210,8 @@ canvas {
 }
 
 .actions-container #btnSave,
-.actions-container #btnCrop {
+.actions-container #btnCrop,
+.actions-container #btnToggle {
     margin-right: 20px;
 }
 

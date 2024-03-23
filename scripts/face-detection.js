@@ -1,7 +1,7 @@
 /**
  * Detect faces in image
  */
-async function detectFaces() {
+async function detectFaces(saveBoundingBox = false) {
   if (baseImageInput) {
     const labeledFaceDescriptors = await loadLabeledImages();
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
@@ -18,7 +18,7 @@ async function detectFaces() {
     const resizedDetections = faceapi.resizeResults(detections, displaySize);
     const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
 
-    generateOutput(results, resizedDetections);
+    generateOutput(results, resizedDetections, saveBoundingBox);
     drawImageOnBoundingBoxes();
   }
 }
