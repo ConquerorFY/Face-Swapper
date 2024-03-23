@@ -15,12 +15,15 @@ function start() {
             targetImageInput = event.target.files[0];
             selectTab(selectedTab ?? "face");
         });
+
         outputImageTab.addEventListener('click', () => selectTab('output', true));
         faceImageTab.addEventListener('click', () => selectTab('face'));
         btnCancel.addEventListener('click', closeModal);
         btnConfirm.addEventListener('click', confirmCroppedFace);
         btnClear.addEventListener('click', handleClearImage);
         btnToggle.addEventListener('click', handleToggleBoundingBox);
+        btnSave.addEventListener('click', handleSaveOutputImage);
+
         selectTab('output');
     })
 }

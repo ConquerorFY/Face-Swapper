@@ -278,7 +278,7 @@ function handleCanvasMouseUp() {
 /**
  * Draw image on bounding boxes
  */
-function drawImageOnBoundingBoxes() {
+function drawImageOnBoundingBoxes(withoutBoundingBoxes = true, callback = null) {
     const imageInput = targetImageCropInput ?? targetImageInput;
     if (imageInput) {
         const reader = new FileReader();
@@ -287,7 +287,7 @@ function drawImageOnBoundingBoxes() {
             img.onload = function () {
                 const ctx = outputCanvas.getContext('2d');
                 ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
-                drawBoundingBoxes();
+                if (withoutBoundingBoxes) drawBoundingBoxes();
 
                 // Draw image within bounding box
                 for (let box of boundingBoxes) {
@@ -302,6 +302,11 @@ function drawImageOnBoundingBoxes() {
 
                     ctx.drawImage(img, center.x - radius, center.y - radius, radius * 2, radius * 2);
                     ctx.restore();
+                }
+
+                if (callback) {
+                    callback();
+                    if (!withoutBoundingBoxes) drawImageOnBoundingBoxes();
                 }
             };
             img.src = e.target.result;
@@ -438,4 +443,19 @@ function handleToggleBoundingBox() {
         targetImageCropInput ?? targetImageInput ? drawImageOnBoundingBoxes() : drawBoundingBoxes();
         showNotification('Bounding boxes are shown!');
     }
+}
+
+/**
+ * Handle save output image
+ */
+function handleSaveOutputImage() {
+    drawImageOnBoundingBoxes(false, () => {
+        html2canvas(divContainer).then(canvas => {
+            const dataURL = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = "output-image";
+            link.href = dataURL;
+            link.click();
+        })
+    });
 }
